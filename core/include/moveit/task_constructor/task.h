@@ -151,6 +151,8 @@ public:
 	ContainerBase* stages();
 	const ContainerBase* stages() const;
 
+	const ContainerBase* stages(uint32_t stage_id) const;
+
 	/// properties access
 	PropertyMap& properties();
 	const PropertyMap& properties() const { return const_cast<Task*>(this)->properties(); }
@@ -162,6 +164,8 @@ protected:
 	bool canCompute() const override;
 	void compute() override;
 	void onNewSolution(const SolutionBase& s) override;
+
+	std::vector<ContainerBase*> stage_vec;
 
 private:
 	using WrapperBase::init;
