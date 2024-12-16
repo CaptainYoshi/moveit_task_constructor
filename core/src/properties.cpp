@@ -223,7 +223,7 @@ void PropertyMap::fillMsgs(std::vector<moveit_task_constructor_msgs::Property>& 
 	}
 }
 
-void PropertyMap::fromMsgs(std::vector<moveit_task_constructor_msgs::Property>& msgs) {
+void PropertyMap::fromMsgs(const std::vector<moveit_task_constructor_msgs::Property>& msgs) {
 	for (const auto& p : msgs) {
 		boost::any value{ Property::deserialize(p.type, p.value) };
 		declare(p.name, value.type(), p.description, value);

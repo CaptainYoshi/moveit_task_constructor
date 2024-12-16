@@ -240,7 +240,7 @@ public:
 	const Property& property(const std::string& name) const { return const_cast<PropertyMap*>(this)->property(name); }
 
 	void fillMsgs(std::vector<moveit_task_constructor_msgs::Property>& msgs) const;
-	void fromMsgs(std::vector<moveit_task_constructor_msgs::Property>& msgs);
+	void fromMsgs(const std::vector<moveit_task_constructor_msgs::Property>& msgs);
 
 	using iterator = std::map<std::string, Property>::iterator;
 	using const_iterator = std::map<std::string, Property>::const_iterator;
