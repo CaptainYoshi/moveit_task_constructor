@@ -1,4 +1,5 @@
 #include <moveit/task_constructor/properties.h>
+#include <moveit/task_constructor/stages/move_relative.h>
 
 #include <moveit/task_constructor/stages/connect.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -41,14 +42,22 @@ TEST(Property, redeclare) {
 	props.declare<double>("double1");
 
 	// avoid second declaration with different type
-	props.declare<double>("double1");
 	EXPECT_THROW(props.declare<long double>("double1"), Property::type_error);
+	EXPECT_THROW(props.declare<boost::any>("double1"), Property::type_error);
+	EXPECT_THROW(props.declare<void>("double1"), Property::type_error);
 
 	// types not matching?
 	EXPECT_THROW(props.set("double1", 1), Property::type_error);
 
 	props.set("double1", 3.14);
 	EXPECT_EQ(props.get<double>("double1"), 3.14);
+
+	// if initial type is boost::any, then allow subsequent declarations with different types
+	props.declare<boost::any>("any");
+	props.declare<double>("any");
+	props.declare<long double>("any");
+	props.declare<void>("any");
+	props.declare<boost::any>("any");
 }
 
 TEST(Property, reset) {
@@ -150,6 +159,15 @@ TEST(Property, storeInMsg) {
 
 	std::set<std::string> forwarded_properties{ "time", "marker_ns" };
 	STORABLE_PROPERTY(decltype(forwarded_properties), forwarded_properties);
+}
+
+TEST(Property, fromMsgs) {
+	auto stage = stages::MoveRelative();
+
+	std::vector<moveit_task_constructor_msgs::Property> prop_msgs;
+	stage.properties().fillMsgs(prop_msgs);
+
+	EXPECT_NO_THROW(stage.properties().fromMsgs(prop_msgs));
 }
 
 class InitFromTest : public ::testing::Test

@@ -81,8 +81,11 @@ public:
 	}
 	const Entry& entry(const std::string& type_name) const {
 		auto it = names_.find(type_name);
-		if (it == names_.end())
+		if (it == names_.end()) {
+			ROS_WARN_STREAM_THROTTLE_NAMED(10.0, LOGNAME, "Unregistered property type: " << type_name);
+
 			return dummy_;
+		}
 		return it->second->second;
 	}
 };
@@ -226,7 +229,12 @@ void PropertyMap::fillMsgs(std::vector<moveit_task_constructor_msgs::Property>& 
 void PropertyMap::fromMsgs(const std::vector<moveit_task_constructor_msgs::Property>& msgs) {
 	for (const auto& p : msgs) {
 		boost::any value{ Property::deserialize(p.type, p.value) };
-		declare(p.name, value.type(), p.description, value);
+
+		// skip empty values
+		if (value.empty())
+			continue;
+
+		set(p.name, value);
 	}
 }
 
