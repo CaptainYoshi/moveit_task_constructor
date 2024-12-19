@@ -147,6 +147,9 @@ TEST(Property, storeInMsg) {
 
 	std::map<std::string, double> joint_targets{ { "joint0", -0.5 }, { "joint1", 1.0 } };
 	STORABLE_PROPERTY(decltype(joint_targets), joint_targets);
+
+	std::set<std::string> forwarded_properties{ "time", "marker_ns" };
+	STORABLE_PROPERTY(decltype(forwarded_properties), forwarded_properties);
 }
 
 class InitFromTest : public ::testing::Test

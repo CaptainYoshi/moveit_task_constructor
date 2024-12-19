@@ -217,5 +217,35 @@ public:
 	}
 };
 
+template <>
+class PropertySerializer<std::set<std::string>> : public PropertySerializerROS<sensor_msgs::JointState>
+{
+	using T = std::set<std::string>;
+	using BaseT = PropertySerializerROS<sensor_msgs::JointState>;
+
+public:
+	PropertySerializer() { insert(typeid(T), this->typeName(), &serialize, &deserialize); }
+
+	static const char* typeName() { return typeid(T).name(); }
+
+	static std::string serialize(const boost::any& value) {
+		T values = boost::any_cast<T>(value);
+		sensor_msgs::JointState state;
+		state.name.reserve(values.size());
+		for (const auto& p : values) {
+			state.name.push_back(p);
+		}
+		return BaseT::serialize(state);
+	}
+
+	static boost::any deserialize(const std::string& wired) {
+		auto state = boost::any_cast<sensor_msgs::JointState>(BaseT::deserialize(wired));
+		T values;
+		for (size_t i = 0; i < state.name.size(); ++i)
+			values.insert(state.name[i]);
+		return values;
+	}
+};
+
 }  // namespace task_constructor
 }  // namespace moveit
